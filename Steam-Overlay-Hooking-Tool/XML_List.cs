@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.IO;
+using System.ComponentModel;
 
 namespace Steam_Overlay_Hooking_Tool
 {
@@ -14,6 +16,7 @@ namespace Steam_Overlay_Hooking_Tool
 		public string processName { get; set; }
 		public string windowTitleRegex { get; set; }
 		public bool manuallyClearFrames { get; set; }
+		public bool enableMovies { get; set; }
 		public int delay { get; set; }
 		public bool is64bit { get; set; }
 
@@ -41,14 +44,64 @@ namespace Steam_Overlay_Hooking_Tool
 
 	class XML_List
 	{
+		private const string XMLFILENAME = "AppHookInfos.xml";
 		private List<ApplicationHookInfo> appHookList = null;
+		private XmlDocument xmlDoc;
+		private XmlNode rootNode;
 
 		public XML_List()
 		{
-			appHookList = new List<ApplicationHookInfo>()
+			xmlDoc = new XmlDocument();
+			if (File.Exists(XMLFILENAME))
 			{
-				new ApplicationHookInfo("trl", "Tomb Raider: Legend") {delay = 2000, is64bit = false, manuallyClearFrames = false }
-			};
+				xmlDoc.Load(XMLFILENAME);
+			}
+
+			rootNode = GetCreateNode("RootGamesNode");
+			appHookList = new List<ApplicationHookInfo>();
+			foreach(XmlNode gameNode in rootNode.ChildNodes)
+			{
+				ApplicationHookInfo newAppHKInfo = new ApplicationHookInfo(gameNode["Process"].InnerText);
+				foreach (XmlNode childNode in gameNode)
+				{
+					if (childNode.Name == "WindowTitle") newAppHKInfo.windowTitleRegex = childNode.InnerText;
+					else if (childNode.Name == "Delay") newAppHKInfo.delay = int.Parse(childNode.InnerText);
+					else if (childNode.Name == "ManuallyClearFrames") newAppHKInfo.manuallyClearFrames = bool.Parse(childNode.InnerText);
+					else if (childNode.Name == "EnableMovies") newAppHKInfo.enableMovies = bool.Parse(childNode.InnerText);
+					else if (childNode.Name == "Is64Bit") newAppHKInfo.is64bit = bool.Parse(childNode.InnerText);
+				}
+				appHookList.Add(newAppHKInfo);
+			}
+		}
+
+		private XmlNode GetCreateNode(string NodeName, XmlNode parentNode = null)
+		{
+			if (parentNode == null)
+			{
+				XmlNode retNode;
+				if (xmlDoc[NodeName] == null)
+				{
+					retNode = xmlDoc.CreateElement(NodeName);
+					xmlDoc.AppendChild(retNode);
+				}
+				else
+					retNode = xmlDoc[NodeName];
+
+				return retNode;
+			}
+			else
+			{
+				XmlNode retNode;
+				if (parentNode[NodeName] == null)
+				{
+					retNode = xmlDoc.CreateElement(NodeName);
+					parentNode.AppendChild(retNode);
+				}
+				else
+					retNode = parentNode[NodeName];
+
+				return retNode;
+			}
 		}
 
 		public Process GetProcessFromXMLList()
@@ -80,11 +133,35 @@ namespace Steam_Overlay_Hooking_Tool
 			sb.Append("-pid " + proc.Id.ToString());
 			ApplicationHookInfo hkInfo = appHookList.First(x => x.processName.ToLower() == proc.ProcessName.ToLower());
 			sb.Append(" -manuallyclearframes " + (hkInfo.manuallyClearFrames ? "1" : "0"));
+			sb.Append(hkInfo.enableMovies ? " -enablemovies 1" : "");
 			System.Threading.Thread.Sleep(hkInfo.delay);
-
 			return sb.ToString();
 		}
 
 
+	}
+
+	public static class XMLSettingsHelper
+	{
+		public static TYPE Parse<TYPE>(this string value, object DEFAULT_VALUE)
+		{
+			try
+			{
+				TYPE result = default(TYPE);
+				if (!string.IsNullOrEmpty(value))
+				{
+					// we are not going to handle exception here
+					// if you need SafeParse then you should create
+					// another method specially for that.
+					TypeConverter tc = TypeDescriptor.GetConverter(typeof(TYPE));
+					result = (TYPE)tc.ConvertFrom(value);
+				}
+				return result;
+			}
+			catch
+			{
+				return (TYPE)DEFAULT_VALUE;
+			}
+		}
 	}
 }

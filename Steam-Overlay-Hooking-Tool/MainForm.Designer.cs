@@ -189,7 +189,7 @@
 			// 
 			// AppCheckTimer
 			// 
-			this.AppCheckTimer.Interval = 1000;
+			this.AppCheckTimer.Interval = 250;
 			this.AppCheckTimer.Tick += new System.EventHandler(this.AppCheckTimer_Tick);
 			// 
 			// MainForm

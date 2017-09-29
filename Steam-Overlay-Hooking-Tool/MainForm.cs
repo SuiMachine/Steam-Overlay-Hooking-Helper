@@ -92,6 +92,7 @@ namespace Steam_Overlay_Hooking_Tool
 			{
 				if (gameProcess.HasExited)
 				{
+					//Could probably be done with an event.
 					Debug.WriteLine("Lost game process. Starting to watch for processes again.");
 					hooked = false;
 				}
