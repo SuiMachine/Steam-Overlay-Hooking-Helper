@@ -20,6 +20,7 @@ namespace Steam_Overlay_Hooking_Tool
 		private string SteamOverlayLocation = "";
 		private string OverlayProc = "GameOverlayUI.exe";
 		private XML_List xmlList;
+		private XML_Downloader downloader;
 
 
 		public MainForm()
@@ -106,6 +107,11 @@ namespace Steam_Overlay_Hooking_Tool
 			RefreshAppWindows();
 			this.trayIconMenuStrip_StopHooking.Click += TrayIconMenuStrip_StopHooking_Click;
 			this.trayIconMenuStrip_Exit.Click += TrayIconMenuStrip_Exit_Click;
+			downloader = new XML_Downloader();
+			if(!downloader.downloadFile())
+			{
+				MessageBox.Show("Failed to download game XML.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
 
 			xmlList = new XML_List();
 		}
