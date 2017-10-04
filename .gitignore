@@ -1,4 +1,5 @@
-releases/
+Release/AppHookInfos.xml
+Release/AppHookInfosNew.xml
 obj/
 bin/
 *.suo
