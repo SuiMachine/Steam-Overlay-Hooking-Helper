@@ -45,6 +45,7 @@ namespace Steam_Overlay_Hooking_Tool
 	class XML_List
 	{
 		private const string XMLFILENAME = "AppHookInfos.xml";
+		private const string TEMPDOCFILENAME = "AppHookInfosNew.xml";
 		private List<ApplicationHookInfo> appHookList = null;
 		private XmlDocument xmlDoc;
 		private XmlNode rootNode;
@@ -52,8 +53,28 @@ namespace Steam_Overlay_Hooking_Tool
 		public XML_List()
 		{
 			xmlDoc = new XmlDocument();
+
 			if (File.Exists(XMLFILENAME))
 			{
+				DateTime downloadedXML = getDateForDownloadedXML();
+				FileInfo currentXML = new FileInfo(XMLFILENAME);
+#if DEBUG
+				Debug.WriteLine("Downloaded XML DateTime: " + downloadedXML.ToString());
+				Debug.WriteLine("Current XML DateTime:" + currentXML.LastWriteTimeUtc.ToString());
+#endif
+				if(File.Exists(TEMPDOCFILENAME))
+				{
+					if (downloadedXML > currentXML.LastWriteTimeUtc)
+					{
+						File.Delete(XMLFILENAME);
+						File.Move(TEMPDOCFILENAME, XMLFILENAME);
+					}
+					else
+					{
+						File.Delete(TEMPDOCFILENAME);
+					}
+				}
+
 				xmlDoc.Load(XMLFILENAME);
 			}
 
@@ -71,6 +92,26 @@ namespace Steam_Overlay_Hooking_Tool
 					else if (childNode.Name == "Is64Bit") newAppHKInfo.is64bit = bool.Parse(childNode.InnerText);
 				}
 				appHookList.Add(newAppHKInfo);
+			}
+		}
+
+		private DateTime getDateForDownloadedXML()
+		{
+			if (File.Exists(TEMPDOCFILENAME))
+			{
+				XmlDocument tempDoc = new XmlDocument();
+				tempDoc.Load(TEMPDOCFILENAME);
+				XmlNode rtNode = tempDoc["RootGamesNode"];
+				DateTime tempDate = new DateTime();
+				var attribs = rtNode.Attributes;
+				if (DateTime.TryParse(rtNode.Attributes["Modified"].Value, out tempDate))
+					return tempDate;
+				else
+					return DateTime.MinValue;
+			}
+			else
+			{
+				return DateTime.MinValue;
 			}
 		}
 

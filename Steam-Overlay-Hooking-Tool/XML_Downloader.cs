@@ -6,13 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.IO;
+using System.Diagnostics;
 
 namespace Steam_Overlay_Hooking_Tool
 {
 	class XML_Downloader
 	{
 		private string location = "https://raw.githubusercontent.com/SuiMachine/Steam-Overlay-Hooking-Helper/master/XML/AppHookInfos.xml";
-		private string FileName = "AppHookInfos.xml";
+		private string FileName = "AppHookInfosNew.xml";
 
 		public XML_Downloader()
 		{
@@ -23,18 +24,19 @@ namespace Steam_Overlay_Hooking_Tool
 			WebClient wbClient = new WebClient();
 			Uri downloadLocation = new Uri(location);
 
-			string TempLocation = Path.GetTempFileName();
-			try { wbClient.DownloadFile(downloadLocation, TempLocation); }
+			string TempLocationFile = Path.GetTempFileName();
+			try { wbClient.DownloadFile(downloadLocation, TempLocationFile); }
 			catch { return false; }
 
-			FileInfo file = new FileInfo(TempLocation);
-			if (file.Length == 0)
+			FileInfo newXMLfile = new FileInfo(TempLocationFile);
+			if (newXMLfile.Length == 0)
 			{
 				return false;
 			}
 
-			File.Copy(TempLocation, Path.Combine(Directory.GetCurrentDirectory(), FileName), true);
+			string workDirXML = Path.Combine(Directory.GetCurrentDirectory(), FileName);
 
+			File.Copy(TempLocationFile, workDirXML, true);
 			return true;
 		}
 	}
