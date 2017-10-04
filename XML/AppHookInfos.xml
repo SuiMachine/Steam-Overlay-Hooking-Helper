@@ -1,12 +1,12 @@
-<RootGamesNode Modified="04/10/2017 14:22:36">
+<RootGamesNode Modified="04/10/2017 14:32:00">
 <Game Name="Tomb Raider: Anniversary">
 	<Process>tra</Process>
 	<WindowTitle>Tomb Raider: Anniversary</WindowTitle>
 	<Delay>2000</Delay>
 </Game>
-<Game Name="Tomb Raider: Legend">
-	<Process>trl</Process>
-	<WindowTitle>Tomb Raider: Legend</WindowTitle>
+<Game Name="Tomb Raider: Underworld">
+	<Process>tru</Process>
+	<WindowTitle>Tomb Raider: Underworld</WindowTitle>
 	<Delay>2000</Delay>
 </Game>
 </RootGamesNode>
