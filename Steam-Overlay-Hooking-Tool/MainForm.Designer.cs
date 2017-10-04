@@ -141,7 +141,6 @@
 			this.trayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("trayIcon.Icon")));
 			this.trayIcon.Text = "Steam Overlay Hooking Tool";
 			this.trayIcon.Visible = true;
-			this.trayIcon.DoubleClick += new System.EventHandler(this.trayIcon_DoubleClick);
 			// 
 			// trayIconMenuStrip
 			// 

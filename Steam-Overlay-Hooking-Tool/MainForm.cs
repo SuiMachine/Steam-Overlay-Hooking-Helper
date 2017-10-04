@@ -65,6 +65,7 @@ namespace Steam_Overlay_Hooking_Tool
 					if (myProcess.Length > 0)
 					{
 						gameProcess = myProcess[0];
+
 						Process gameOverlayProc = new Process();
 						gameOverlayProc.StartInfo.WorkingDirectory = SteamOverlayLocation;
 						gameOverlayProc.StartInfo.FileName = Path.Combine(SteamOverlayLocation, OverlayProc);
@@ -118,6 +119,7 @@ namespace Steam_Overlay_Hooking_Tool
 
 		private void TrayIconMenuStrip_StopHooking_Click(object sender, EventArgs e)
 		{
+			this.Show();
 			this.WindowState = FormWindowState.Normal;
 		}
 
@@ -139,23 +141,23 @@ namespace Steam_Overlay_Hooking_Tool
 		{
 			if (this.WindowState == FormWindowState.Minimized)
 			{
-				this.AppCheckTimer.Start();
 				this.trayIcon.Visible = true;
 				this.Hide();
+				this.AppCheckTimer.Start();
 #if DEBUG
 				Debug.WriteLine("Window changes to Minimized. Starting timer.");
 #endif
 			}
-			else
+			else if (this.WindowState == FormWindowState.Normal)
 			{
-				this.AppCheckTimer.Stop();
 				this.trayIcon.Visible = false;
-				this.Show();
-
+				this.AppCheckTimer.Stop();
 #if DEBUG
 				Debug.WriteLine("Window changes to Normal. Stopping timer.");
 #endif
 			}
+			else if (this.WindowState == FormWindowState.Maximized)
+				this.WindowState = FormWindowState.Normal;
 		}
 
 		private void trayIcon_DoubleClick(object sender, EventArgs e)
