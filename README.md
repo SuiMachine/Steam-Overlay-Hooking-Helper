@@ -5,4 +5,4 @@ What it does, is it's monitoring processes running and if a specified process is
 
 Credits
 -------
-  * [SuicideMachine](http://twitch.tv/suicidemachine)
+  * [SuicideMachine](http://twitch.tv/suimachine)
